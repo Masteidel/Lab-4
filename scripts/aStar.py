@@ -79,7 +79,8 @@ def aStar(grid, start, goal): #takes a grid (2D array of cell objects), start an
             #yep!
             print "GOOOAAAAL!"
             path = cellPath(current)
-            publishGridCells(path, 'aStar_Closed')
+            publishPath(path)
+            #publishGridCells(path, 'aStar_Closed')
             return #!!!figure out return data!!!
 
         #get all the children:
