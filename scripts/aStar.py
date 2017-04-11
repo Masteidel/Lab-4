@@ -314,8 +314,8 @@ def get_Path(cells): #takes a list of cells in the order that we wish to visit t
     return Path(pathHead,poses)
 
 def NavToPath(path):
-    for pose in path:
-        navToPose(path.pose)
+    for pose in path.poses:
+        navToPose(pose)
 
 def navToPose(goal):
     global pose
