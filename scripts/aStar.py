@@ -252,7 +252,7 @@ def get_Path(cells): #takes a list of cells in the order that we wish to visit t
         if (cells[i+1].x < cells[i].x) and (cells[i+1].y < cells[i].y): #move in negative x, negative y direction
             cells[i].nextMove = 7
         i+=1
-
+        publish cells[i].nextMove
     i = 1 #start with the second cell
     while (i < len(cells)):
         if not (cells[i].nextMove == cells[i-1].nextMove): #if they are the same, the robot is moving in the right
