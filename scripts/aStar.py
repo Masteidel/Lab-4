@@ -207,6 +207,8 @@ def publishPath(cells): #takes a list of cells in the order that we wish to visi
      pub.publish(getPath(cells))
     
 def getPath(cells): #takes a list of cells in the order that we wish to visit them and returns a path message
+    global seqNum
+
     #create header:
     pathHead = Header()
     pathHead.seq = seqNum
