@@ -203,10 +203,12 @@ def cellPath(cell): #takes a cell and returns a list of all the cells leading to
     return path
 
 def publishPath(cells): #takes a list of cells in the order that we wish to visit them and publishes a path message
+     print "Publish Path"
      pub = rospy.Publisher('aStar_Path', Path, queue_size=10)
      pub.publish(get_Path(cells))
     
 def get_Path(cells): #takes a list of cells in the order that we wish to visit them and returns a path message
+    print "Get Path"
     global seqNum
 
     #create header:
