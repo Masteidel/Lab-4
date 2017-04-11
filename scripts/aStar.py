@@ -321,6 +321,7 @@ def navToPose(goal):
     global pose
     global xPosition
     global yPosition
+    global publ
     goalPoseX = goal.pose.position.x    #x position of the goal
     goalPoseY = goal.pose.position.y    #y position of the goal
     odomW = goal.pose.orientation
@@ -363,6 +364,7 @@ def driveStraight(speed, distance):
     global pose
     global xPosition
     global yPosition
+    global publ
     #Initial x and y positions of the turtlebot
     initialX = xPosition
     initialY = yPosition
@@ -395,6 +397,7 @@ def rotate(angle):
     global odom_list
     global pose
     global theta
+    global publ
     #Check if angle is within acceptable range
     if(angle > math.pi or angle < -math.pi):
         print "angle is too large or too small"
@@ -530,6 +533,7 @@ if __name__ == '__main__':
     global pose
     global odom_tf
     global odom_list
+    global publ
 
     map_sub = rospy.Subscriber('/map', OccupancyGrid, getMap, queue_size=1) #get the occupancy grid
     #start_sub = rospy.Subscriber('', GridCells, callAStar, queue_size=1)
