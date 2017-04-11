@@ -319,6 +319,8 @@ def NavToPath(path):
 
 def navToPose(goal):
     global pose
+    global xPosition
+    global yPosition
     goalPoseX = goal.pose.position.x    #x position of the goal
     goalPoseY = goal.pose.position.y    #y position of the goal
     odomW = goal.pose.orientation
