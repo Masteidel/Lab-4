@@ -531,7 +531,7 @@ if __name__ == '__main__':
     map_sub = rospy.Subscriber('/map', OccupancyGrid, getMap, queue_size=1) #get the occupancy grid
     #start_sub = rospy.Subscriber('', GridCells, callAStar, queue_size=1)
     goal_sub = rospy.Subscriber('/goal', PoseStamped, callAStar, queue_size=1)
-
+    pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, None, queue_size=10)
     odom_list = tf.TransformListener() #save the bot's odometry
 
     #create the sequence number for the gridcells messages
