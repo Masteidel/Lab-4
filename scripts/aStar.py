@@ -380,9 +380,9 @@ def driveStraight(speed, distance):
         #Drive until the robot has reached its desired positon
         if(currentDistance >= distance):
             atTarget = True
-            pub.publish(stop_msg)
+            publ.publish(stop_msg)
         else:
-            pub.publish(drive_msg)
+            publ.publish(drive_msg)
             rospy.sleep(0.15)
 
 
@@ -423,11 +423,11 @@ def rotate(angle):
 
             #Rotate until desired heading is reacched
             if(abs(error) >= math.radians(2.0)):
-                pub.publish(vel)
+                publ.publish(vel)
             else:
                 done = True
                 vel.angular.z = 0
-                pub.publish(vel)
+                publ.publish(vel)
 
 def get2DArray(data, width, height): #an absolutely thrilling function to take a 1D array and break
                                      #it into a 2D array (a grid) given a width and height
@@ -531,7 +531,7 @@ if __name__ == '__main__':
     map_sub = rospy.Subscriber('/map', OccupancyGrid, getMap, queue_size=1) #get the occupancy grid
     #start_sub = rospy.Subscriber('', GridCells, callAStar, queue_size=1)
     goal_sub = rospy.Subscriber('/goal', PoseStamped, callAStar, queue_size=1)
-    pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, None, queue_size=10)
+    publ = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, None, queue_size=10)
     odom_list = tf.TransformListener() #save the bot's odometry
 
     #create the sequence number for the gridcells messages
