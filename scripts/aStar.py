@@ -361,7 +361,8 @@ def navToPose(goal):
 #This function accepts a speed and a distance for the robot to move in a straight line
 def driveStraight(speed, distance):
     global pose
-
+    global xPosition
+    global yPosition
     #Initial x and y positions of the turtlebot
     initialX = xPosition
     initialY = yPosition
