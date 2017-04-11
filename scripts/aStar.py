@@ -301,9 +301,9 @@ def getPath(cells): #takes a list of cells in the order that we wish to visit th
             head.stamp = rospy.get_rostime()
             head.frame_id = "waypoint"
                 
-            PoseStamped = PoseStamped(head, pose) #create the PoseStamped object
+            poseStamped = PoseStamped(head, pose) #create the PoseStamped object
 
-            poses.append(PoseStamped)
+            poses.append(poseStamped)
         i+=1
        #end if
     #end for loop
