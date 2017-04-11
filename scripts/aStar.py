@@ -283,7 +283,7 @@ def getPath(cells): #takes a list of cells in the order that we wish to visit th
 
             #convert that angle to a quaternian:
             quaternion = tf.transformations.quaternion_from_euler(0, 0, turn)
-            pose = geometry_msgs.msg.Pose()
+            pose = Pose()
             pose.orientation.x = quaternion[0]
             pose.orientation.y = quaternion[1]
             pose.orientation.z = quaternion[2]
