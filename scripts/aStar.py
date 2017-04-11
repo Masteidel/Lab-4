@@ -301,14 +301,14 @@ def getPath(cells): #takes a list of cells in the order that we wish to visit th
             head.stamp = rospy.get_rostime()
             head.frame_id = "waypoint"
                 
-            PoseStamped = geometry_msgs.msg.PoseStamped(head, pose) #create the PoseStamped object
+            PoseStamped = PoseStamped(head, pose) #create the PoseStamped object
 
             poses.append(PoseStamped)
         i+=1
        #end if
     #end for loop
     
-    return nav_msgs.msg.Path(pathHead,poses)
+    return Path(pathHead,poses)
 
 def navToPose(goal):
     global pose
