@@ -17,7 +17,7 @@ from tf.transformations import quaternion_from_euler
 def followPath(path):
     print "Path Received"
     wayPoints = path.poses
-    for wayPoint in wayPoints #iterate through the path
+    for wayPoint in wayPoints: #iterate through the path
         print "Going to next waypoint"
         navToPose(wayPoint) #go to the waypoint
     print "AT TARGET"
