@@ -158,7 +158,7 @@ def aStar(grid, start, goal): #takes a grid (2D array of cell objects), start an
                     child.cameFrom = current #obviously we came from the current cell to get to its neighbor
 
                     openSet.put((child.cost,child)) #add to priority queue
-                    closedSet.append(child)
+                closedSet.append(child)
 
         #display on the grid
         #publishGridCells(openSet,'aStar_Open')
