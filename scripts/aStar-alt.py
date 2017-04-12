@@ -362,6 +362,25 @@ def navToPose(goal):
 
 #This function accepts a speed and a distance for the robot to move in a straight line
 def driveStraight(speed, distance):
+    global currX
+    global currY
+    
+    #get starting position
+    getCurrentPos()
+
+    startX = currX
+    startY = currY
+
+    while(math.sqrt(((startX-currX)**2) + ((startY-currY)**2)) < distance):
+        getCurrentPos()
+        #publish to Twist:
+        twist = Twist()
+        twist.linear.x = speed; twist.linear.y = 0; twist.linear.z = 0
+        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
+        pub.publish(twist)
+            
+#This function accepts a speed and a distance for the robot to move in a straight line
+def driveStraight2(speed, distance):
     global pose
     global xPosition
     global yPosition
@@ -393,7 +412,25 @@ def driveStraight(speed, distance):
             publ.publish(drive_msg)
             rospy.sleep(0.15)
 
+#funtion to get current position
+def getCurrentPos():
+    #current position and orientation:
+    global currentX
+    global currentY
+    global currAng
 
+    rate = rospy.Rate(10.0)
+    try:
+        (trans,quat) = odom_list.lookupTransform('odom', 'base_footprint', rospy.Time(0))
+        #the transform array is fine for x and y
+        currentX = trans[0]
+        currY = trans[1]
+        #need to use the Euler-ized quaternion
+        euler = tf.transformations.euler_from_quaternion(quat)
+        currAng = normAngle(euler[2])#note that it gets converted right here to be between 0 and 2 pi, prevents issues later
+    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+        print "TF Exception"
+        
 
 #Accepts an angle and makes the robot rotate around it.
 def rotate(angle):
@@ -538,7 +575,9 @@ if __name__ == '__main__':
     global pose
     global odom_tf
     global odom_list
-    global publ
+    global publ    
+    global currAng
+
 
     map_sub = rospy.Subscriber('/map', OccupancyGrid, getMap, queue_size=1) #get the occupancy grid
     #start_sub = rospy.Subscriber('', GridCells, callAStar, queue_size=1)
