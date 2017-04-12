@@ -382,6 +382,10 @@ def driveStraight(speed, distance):
         #Continously find the distance travelled from starting position
         currentX = xPosition
         currentY = yPosition
+        print "currentX:"
+        print currentX
+        print "currentY:"
+        print currentY
         currentDistance = math.sqrt(math.pow((currentX - initialX), 2) + math.pow((currentY - initialY), 2))
         #Drive until the robot has reached its desired positon
         if(currentDistance >= distance):
@@ -403,7 +407,6 @@ def rotate(angle):
     if(angle > math.pi or angle < -math.pi):
         print "angle is too large or too small"
     else:
-        print "desired angle"
         vel = Twist()
         done = False
 
