@@ -165,7 +165,7 @@ def aStar(grid, start, goal): #takes a grid (2D array of cell objects), start an
         #publishGridCells(closedSet, 'aStar_Closed')
         #END MAIN WHILE
     newSet = []
-    newSet.append(goal
+    newSet.append(goal)
     publishGridCells(newSet, 'aStar_Closed')
     print("no solutions exist")
     #END
