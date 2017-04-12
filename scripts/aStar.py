@@ -380,8 +380,8 @@ def pointList(cells): #creates a list of points from a list of cells
 def pointFromCell(cell): #creates a point from a cell
     newPoint = Point()
 
-    newPoint.x = cell.x+offSetX
-    newPoint.y = cell.y+offSetY
+    newPoint.x = (cell.x*resolution)+offSetX
+    newPoint.y = (cell.y*resolution)+offSetY
     newPoint.z = 0
     
     return newPoint
