@@ -514,9 +514,7 @@ if __name__ == '__main__':
     # Use this command to make the program wait for some seconds
     rospy.sleep(rospy.Duration(1, 0))
     print "Starting A*"
-    timerCallback(1)
 
-    rospy.Timer(rospy.Duration(0.01), timerCallback)
     odom_list = tf.TransformListener()
     
     while(not rospy.is_shutdown()):
