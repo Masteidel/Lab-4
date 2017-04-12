@@ -205,8 +205,10 @@ def cellPath(cell): #takes a cell and returns a list of all the cells leading to
 def publishPath(cells): #takes a list of cells in the order that we wish to visit them and publishes a path message
      global pathPub
 
-     print "Publish Path"
-     pathPub.publish(get_Path(cells))
+     print "Publish Path, calling get_Path"
+     path = get_Path(cells)
+     print "Returned from get_Path"
+     pathPub.publish(path)
     
 def get_Path(cells): #takes a list of cells in the order that we wish to visit them and returns a path message
     print "Get Path"
@@ -253,7 +255,9 @@ def get_Path(cells): #takes a list of cells in the order that we wish to visit t
         if (cells[i+1].x < cells[i].x) and (cells[i+1].y < cells[i].y): #move in negative x, negative y direction
             cells[i].nextMove = 7
         i+=1
-        print cells[i].nextMove
+
+        print cells[i].nextMove #Print the direction
+
     i = 1 #start with the second cell
     while (i < len(cells)):
         if not (cells[i].nextMove == cells[i-1].nextMove): #if they are the same, the robot is moving in the right
@@ -312,10 +316,6 @@ def get_Path(cells): #takes a list of cells in the order that we wish to visit t
     #end for loop
     
     return Path(pathHead,poses)
-
-def NavToPath(path):
-    for pose in path.poses:
-        navToPose(pose)
 
 
 def get2DArray(data, width, height): #an absolutely thrilling function to take a 1D array and break
