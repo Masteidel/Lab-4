@@ -330,17 +330,18 @@ def navToPose(goal):
     goalPoseAng = yaw                   #orientation of goal
     initialX = xPosition                #Starting x position of turtlebot
     initialY = yPosition                #Starting y position of turtlebot
+    initialAng = math.radians(theta)
     #Rotate towards goal
     if((goalPoseX - initialX) == 0):
         if((goalPoseY - initialY) > 0):
             print "spin!"
-            rotate(math.pi)
+            rotate((math.pi/2.0) - initialAng)
         elif((goalPoseY - initialY) < 0):
             print "spin!"
-            rotate(-math.pi)
+            rotate(-(math.pi/2.0) - initialAng)
     else:
         print "spin!"
-        rotate(math.atan2((goalPoseY - initialY), (goalPoseX - initialX)))
+        rotate(math.atan2((goalPoseY - initialY), (goalPoseX - initialX)) - initialAng)
     #Drive towards goal
     print "move!"
     driveStraight(0.2, math.sqrt(math.pow((goalPoseX - initialX), 2) + math.pow((goalPoseY - initialY), 2)))
@@ -402,6 +403,7 @@ def rotate(angle):
     if(angle > math.pi or angle < -math.pi):
         print "angle is too large or too small"
     else:
+        print "desired angle"
         vel = Twist()
         done = False
 
