@@ -410,6 +410,16 @@ def getCurrentPos():
         currAng = normAngle(euler[2])#note that it gets converted right here to be between 0 and 2 pi, prevents issues later
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
         print "TF Exception"
+
+#Normalizes the angle from 0-2pi (its a little weird straight from the 'bot)
+def normAngle(angle):
+    #2pi or not 2pi, that is the question
+    if (angle >=  0):#all good!
+        return angle
+    else:
+        return (2*math.pi)+angle#this compensates for the fact that the
+                                #angle is starting at -pi and working to 0
+    
 #         
 # This is the program's main function
 if __name__ == '__main__':
