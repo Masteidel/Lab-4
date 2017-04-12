@@ -16,7 +16,8 @@ from tf.transformations import quaternion_from_euler
 #Upon receipt of a path, instructs the robot to drive to the waypoints in the proper order
 def followPath(path):
     print "Path Received"
-    for wayPoint in path.poses #iterate through the path
+    wayPoints = path.poses
+    for wayPoint in wayPoints #iterate through the path
         print "Going to next waypoint"
         navToPose(wayPoint) #go to the waypoint
     print "AT TARGET"
