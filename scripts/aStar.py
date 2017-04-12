@@ -317,128 +317,6 @@ def NavToPath(path):
     for pose in path.poses:
         navToPose(pose)
 
-def navToPose(goal):
-    global pose
-    global xPosition
-    global yPosition
-    global publ
-    goalPoseX = goal.pose.position.x    #x position of the goal
-    goalPoseY = goal.pose.position.y    #y position of the goal
-    odomW = goal.pose.orientation
-    q = [odomW.x, odomW.y, odomW.z, odomW.w]
-    roll, pitch, yaw = euler_from_quaternion(q)
-    goalPoseAng = yaw                   #orientation of goal
-    initialX = xPosition                #Starting x position of turtlebot
-    initialY = yPosition                #Starting y position of turtlebot
-    initialAng = math.radians(theta)
-    #Rotate towards goal
-    if((goalPoseX - initialX) == 0):
-        if((goalPoseY - initialY) > 0):
-            print "spin!"
-            rotate((math.pi/2.0) - initialAng)
-        elif((goalPoseY - initialY) < 0):
-            print "spin!"
-            rotate(-(math.pi/2.0) - initialAng)
-    else:
-        print "spin!"
-        rotate(math.atan2((goalPoseY - initialY), (goalPoseX - initialX)) - initialAng)
-    #Drive towards goal
-    print "move!"
-    driveStraight(0.2, math.sqrt(math.pow((goalPoseX - initialX), 2) + math.pow((goalPoseY - initialY), 2)))
-    initialAng = math.radians(theta)    #Heading of turtlebot after reaching desired location
-    #Rotate to pose
-    if((goalPoseAng - initialAng) != 0):
-        if((goalPoseAng - initialAng) > math.pi):
-            print "spin!"
-            rotate((goalPoseAng - initialAng) - 2*math.pi)
-        elif((goalPoseAng - initialAng) < -math.pi):
-            print "spin!"
-            rotate((goalPoseAng - initialAng) + 2*math.pi)
-        else:
-            print "spin!"
-            rotate(goalPoseAng - initialAng)
-    print "done"
-    pass
-
-#This function accepts a speed and a distance for the robot to move in a straight line
-def driveStraight(speed, distance):
-    global pose
-    global xPosition
-    global yPosition
-    global publ
-    #Initial x and y positions of the turtlebot
-    initialX = xPosition
-    initialY = yPosition
-
-    #Create two Twist messages
-    drive_msg = Twist()
-    stop_msg = Twist()
-
-    #Populate messages with data
-    drive_msg.linear.x = speed
-    stop_msg.linear.x = 0
-    atTarget = False
-    while(not atTarget and not rospy.is_shutdown()):
-        #Continously find the distance travelled from starting position
-        currentX = xPosition
-        currentY = yPosition
-        print "currentX:"
-        print currentX
-        print "currentY:"
-        print currentY
-        currentDistance = math.sqrt(math.pow((currentX - initialX), 2) + math.pow((currentY - initialY), 2))
-        #Drive until the robot has reached its desired positon
-        if(currentDistance >= distance):
-            atTarget = True
-            publ.publish(stop_msg)
-        else:
-            publ.publish(drive_msg)
-            rospy.sleep(0.15)
-
-
-
-#Accepts an angle and makes the robot rotate around it.
-def rotate(angle):
-    global odom_list
-    global pose
-    global theta
-    global publ
-    #Check if angle is within acceptable range
-    if(angle > math.pi or angle < -math.pi):
-        print "angle is too large or too small"
-    else:
-        vel = Twist()
-        done = False
-
-        #Initial heading
-        initialThetaRad = math.radians(theta)
-
-        #Determine which direction to rotate
-        if(angle > 0):
-            vel.angular.z = 1
-        else:
-            vel.angular.z = -1
-        while(not done and not rospy.is_shutdown()):
-            #Continuously update current heading and difference
-            #between initial and current headings
-            thetaRad = math.radians(theta)
-            diff = thetaRad - initialThetaRad
-
-            #Adjust for values above pi radians and below -pi radians
-            if(diff > math.pi):
-                error = angle - (diff - 2*math.pi)
-            elif(diff < -math.pi):
-                error = angle - (diff + 2*math.pi)
-            else:
-                error = angle - diff
-
-            #Rotate until desired heading is reacched
-            if(abs(error) >= math.radians(2.0)):
-                publ.publish(vel)
-            else:
-                done = True
-                vel.angular.z = 0
-                publ.publish(vel)
 
 def get2DArray(data, width, height): #an absolutely thrilling function to take a 1D array and break
                                      #it into a 2D array (a grid) given a width and height
@@ -507,27 +385,111 @@ def pointFromCell(cell): #creates a point from a cell
     
     return newPoint
 
+#This function accepts a speed and a distance for the robot to move in a straight line
+def driveStraight(speed, distance):
+    global currX
+    global currY
+    
+    #get starting position
+    getCurrentPos()
 
-def timerCallback(event):
-    global pose
-    global xPosition
-    global yPosition
-    global theta
+    startX = currX
+    startY = currY
 
-    pose = Pose()
+    while(math.sqrt(((startX-currX)**2) + ((startY-currY)**2)) < distance):
+        getCurrentPos()
+        #publish to Twist:
+        twist = Twist()
+        twist.linear.x = speed; twist.linear.y = 0; twist.linear.z = 0
+        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
+        publ.publish(twist)
 
-    odom_list.waitForTransform('odom', 'base_footprint', rospy.Time(0), rospy.Duration(0.1))
-    (position, orientation) = odom_list.lookupTransform('odom','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
-    pose.position.x = position[0]
-    pose.position.y = position[1]
-    xPosition = position[0]
-    yPosition = position[1]
 
-    odomW = orientation
-    q = [odomW[0], odomW[1], odomW[2], odomW[3]]
-    roll, pitch, yaw = euler_from_quaternion(q)
-    pose.orientation.z = yaw
-    theta = math.degrees(yaw)
+#drive to a goal subscribed as /move_base_simple/goal
+def navToPose(goal):
+    global currX
+    global currY
+    global currAng
+
+    getCurrentPos()
+
+    quat = goal.pose.orientation
+    euler = tf.transformations.euler_from_quaternion([quat.x, quat.y, quat.z, quat.w])
+
+    finalAng = euler[2]#angle we need to end up at
+    targetX = goal.pose.position.x
+    targetY = goal.pose.position.y
+    
+    targetAng = math.atan2(targetY-currY, targetX-currX)#angle towards target
+
+    print "spin!"
+    rotateToAngle(targetAng)
+    print "move!"
+    driveStraight(1, (math.sqrt(((currX-targetX)**2) + ((currY-targetY)**2))))
+    print "spin!"
+    rotateToAngle(finalAng)
+    print "done"
+
+#funtion to get current position
+def getCurrentPos():
+    #current position and orientation:
+    global currX
+    global currY
+    global currAng
+
+    rate = rospy.Rate(10.0)
+    try:
+        (trans,quat) = odom_list.lookupTransform('odom', 'base_footprint', rospy.Time(0))
+        #the transform array is fine for x and y
+        currX = trans[0]
+        currY = trans[1]
+        #need to use the Euler-ized quaternion
+        euler = tf.transformations.euler_from_quaternion(quat)
+        currAng = normAngle(euler[2])#note that it gets converted right here to be between 0 and 2 pi, prevents issues later
+    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+        print "TF Exception"
+        
+def stop():
+    #STOP:
+    twist = Twist()
+    twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+    twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
+    
+    publ.publish(twist)
+
+    rospy.sleep(rospy.Duration(1, 0))
+            
+#Normalizes the angle from 0-2pi (its a little weird straight from the 'bot)
+def normAngle(angle):
+    #2pi or not 2pi, that is the question
+    if (angle >=  0):#all good!
+        return angle
+    else:
+        return (2*math.pi)+angle#this compensates for the fact that the
+                                #angle is starting at -pi and working to 0
+    
+#Accepts an angle and makes the robot rotate to it.
+def rotateToAngle(angle):
+    global currAng
+    getCurrentPos()
+    angle = normAngle(angle)#make it between pi and 2pi
+    
+    while (currAng > angle):
+        getCurrentPos()#could have prob set up a timer to do this, might have been worth it since 
+                       #forgetting this call is the number one "unsolvable" bug right now
+        #publish to Twist:
+        twist = Twist()
+        twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = -1
+        publ.publish(twist)
+    while (currAng < angle):
+        getCurrentPos()
+        #publish to Twist:
+        twist = Twist()
+        twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 1
+        publ.publish(twist)
+    stop()
 
 
 # This is the program's main function
