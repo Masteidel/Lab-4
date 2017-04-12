@@ -387,6 +387,8 @@ def driveStraight(speed, distance):
         if(currentDistance >= distance):
             atTarget = True
             publ.publish(stop_msg)
+            print "STOP"
+            return
         else:
             publ.publish(drive_msg)
             rospy.sleep(0.15)
