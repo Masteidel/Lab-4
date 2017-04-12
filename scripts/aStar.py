@@ -362,8 +362,8 @@ def publishGridCells(cells,topic):#takes a list of cells and publishes them to a
     gridCells = GridCells()#create the message
     #fill the message with the necessary data
     gridCells.header = head
-    gridCells.cell_width = 1
-    gridCells.cell_height = 1
+    gridCells.cell_width = resolution
+    gridCells.cell_height = resolution
     gridCells.cells = points
 
     gridCellsPub.publish(gridCells)
