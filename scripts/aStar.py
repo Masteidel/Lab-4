@@ -402,7 +402,7 @@ if __name__ == '__main__':
     #start_sub = rospy.Subscriber('', GridCells, callAStar, queue_size=1)
     goal_sub = rospy.Subscriber('/goal', PoseStamped, callAStar, queue_size=1)
     pathPub = rospy.Publisher('aStar_Path', Path, queue_size=10)
-    gridCellsPub = rospy.Publisher(topic, GridCells, queue_size=10)
+    gridCellsPub = rospy.Publisher('aStar_Closed', GridCells, queue_size=10)
 
     publ = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, None, queue_size=10)
     odom_list = tf.TransformListener() #save the bot's odometry
