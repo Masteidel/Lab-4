@@ -344,6 +344,7 @@ def navToPose(goal):
     #Drive towards goal
     print "move!"
     driveStraight(0.2, math.sqrt(math.pow((goalPoseX - initialX), 2) + math.pow((goalPoseY - initialY), 2)))
+    print "Exit driveStraight"
     initialAng = math.radians(theta)    #Heading of turtlebot after reaching desired location
     #Rotate to pose
     if((goalPoseAng - initialAng) != 0):
