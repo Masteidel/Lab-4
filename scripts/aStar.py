@@ -48,6 +48,12 @@ def getMap(msg): #callBack for the map topic
     print "height"
     print msg.info.height
 
+    print "Offset X"
+    print offSetX
+
+    print "Offset Y"
+    print offSetY
+
     offSetX = msg.info.origin.position.x
     offSetY = msg.info.origin.position.y
     resolution = msg.info.resolution
