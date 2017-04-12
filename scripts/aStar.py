@@ -209,6 +209,7 @@ def publishPath(cells): #takes a list of cells in the order that we wish to visi
      path = get_Path(cells)
      print "Returned from get_Path"
      pathPub.publish(path)
+     print "End of publishPath"
     
 def get_Path(cells): #takes a list of cells in the order that we wish to visit them and returns a path message
     print "Get Path"
