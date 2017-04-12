@@ -81,7 +81,6 @@ def aStar(grid, start, goal): #takes a grid (2D array of cell objects), start an
             path = cellPath(current)
             publishPath(path)
             publishGridCells(path, 'aStar_Closed')
-            NavToPath(get_Path(path))
             return #!!!figure out return data!!!
 
         #get all the children:
@@ -205,7 +204,7 @@ def cellPath(cell): #takes a cell and returns a list of all the cells leading to
 
 def publishPath(cells): #takes a list of cells in the order that we wish to visit them and publishes a path message
      global pathPub
-     
+
      print "Publish Path"
      pathPub.publish(get_Path(cells))
     
