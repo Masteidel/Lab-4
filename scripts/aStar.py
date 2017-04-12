@@ -79,7 +79,7 @@ def aStar(grid, start, goal): #takes a grid (2D array of cell objects), start an
             #yep!
             print "GOOOAAAAL!"
             path = cellPath(current)
-            #publishPath(path)
+            publishPath(path)
             publishGridCells(path, 'aStar_Closed')
             NavToPath(get_Path(path))
             return #!!!figure out return data!!!
@@ -204,9 +204,10 @@ def cellPath(cell): #takes a cell and returns a list of all the cells leading to
     return path
 
 def publishPath(cells): #takes a list of cells in the order that we wish to visit them and publishes a path message
+     global pathPub
+     
      print "Publish Path"
-     pub = rospy.Publisher('aStar_Path', Path, queue_size=10)
-     pub.publish(get_Path(cells))
+     pathPub.publish(get_Path(cells))
     
 def get_Path(cells): #takes a list of cells in the order that we wish to visit them and returns a path message
     print "Get Path"
@@ -346,8 +347,7 @@ def get2DArray(data, width, height): #an absolutely thrilling function to take a
 def publishGridCells(cells,topic):#takes a list of cells and publishes them to a given topic
     global seqNum
     global resolution
-    
-    pub = rospy.Publisher(topic, GridCells, queue_size=10)
+    global gridCellsPub
     
     #create header:
     head = Header()
@@ -365,7 +365,7 @@ def publishGridCells(cells,topic):#takes a list of cells and publishes them to a
     gridCells.cell_height = 1
     gridCells.cells = points
 
-    pub.publish(gridCells)
+    gridCellsPub.publish(gridCells)
     
 
 def pointList(cells): #creates a list of points from a list of cells
@@ -385,113 +385,6 @@ def pointFromCell(cell): #creates a point from a cell
     
     return newPoint
 
-#This function accepts a speed and a distance for the robot to move in a straight line
-def driveStraight(speed, distance):
-    global currX
-    global currY
-    
-    #get starting position
-    getCurrentPos()
-
-    startX = currX
-    startY = currY
-
-    while(math.sqrt(((startX-currX)**2) + ((startY-currY)**2)) < distance):
-        getCurrentPos()
-        #publish to Twist:
-        twist = Twist()
-        twist.linear.x = speed; twist.linear.y = 0; twist.linear.z = 0
-        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
-        publ.publish(twist)
-
-
-#drive to a goal subscribed as /move_base_simple/goal
-def navToPose(goal):
-    global currX
-    global currY
-    global currAng
-
-    getCurrentPos()
-
-    quat = goal.pose.orientation
-    euler = tf.transformations.euler_from_quaternion([quat.x, quat.y, quat.z, quat.w])
-
-    finalAng = euler[2]#angle we need to end up at
-    targetX = goal.pose.position.x
-    targetY = goal.pose.position.y
-    
-    targetAng = math.atan2(targetY-currY, targetX-currX)#angle towards target
-
-    print "spin!"
-    rotateToAngle(targetAng)
-    print "move!"
-    driveStraight(1, (math.sqrt(((currX-targetX)**2) + ((currY-targetY)**2))))
-    print "spin!"
-    rotateToAngle(finalAng)
-    print "done"
-
-#funtion to get current position
-def getCurrentPos():
-    #current position and orientation:
-    global currX
-    global currY
-    global currAng
-
-    rate = rospy.Rate(10.0)
-    try:
-        (trans,quat) = odom_list.lookupTransform('odom', 'base_footprint', rospy.Time(0))
-        #the transform array is fine for x and y
-        currX = trans[0]
-        currY = trans[1]
-        #need to use the Euler-ized quaternion
-        euler = tf.transformations.euler_from_quaternion(quat)
-        currAng = normAngle(euler[2])#note that it gets converted right here to be between 0 and 2 pi, prevents issues later
-    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-        print "TF Exception"
-        
-def stop():
-    #STOP:
-    twist = Twist()
-    twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
-    twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
-    
-    publ.publish(twist)
-
-    rospy.sleep(rospy.Duration(1, 0))
-            
-#Normalizes the angle from 0-2pi (its a little weird straight from the 'bot)
-def normAngle(angle):
-    #2pi or not 2pi, that is the question
-    if (angle >=  0):#all good!
-        return angle
-    else:
-        return (2*math.pi)+angle#this compensates for the fact that the
-                                #angle is starting at -pi and working to 0
-    
-#Accepts an angle and makes the robot rotate to it.
-def rotateToAngle(angle):
-    global currAng
-    getCurrentPos()
-    angle = normAngle(angle)#make it between pi and 2pi
-    
-    while (currAng > angle):
-        getCurrentPos()#could have prob set up a timer to do this, might have been worth it since 
-                       #forgetting this call is the number one "unsolvable" bug right now
-        #publish to Twist:
-        twist = Twist()
-        twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
-        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = -1
-        publ.publish(twist)
-    while (currAng < angle):
-        getCurrentPos()
-        #publish to Twist:
-        twist = Twist()
-        twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
-        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 1
-        publ.publish(twist)
-    stop()
-
-
 # This is the program's main function
 if __name__ == '__main__':
     rospy.init_node('aStar')
@@ -500,11 +393,17 @@ if __name__ == '__main__':
     global pose
     global odom_tf
     global odom_list
+
     global publ
+    global pathPub
+    global gridCellsPub
 
     map_sub = rospy.Subscriber('/map', OccupancyGrid, getMap, queue_size=1) #get the occupancy grid
     #start_sub = rospy.Subscriber('', GridCells, callAStar, queue_size=1)
     goal_sub = rospy.Subscriber('/goal', PoseStamped, callAStar, queue_size=1)
+    pathPub = rospy.Publisher('aStar_Path', Path, queue_size=10)
+    gridCellsPub = rospy.Publisher(topic, GridCells, queue_size=10)
+
     publ = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, None, queue_size=10)
     odom_list = tf.TransformListener() #save the bot's odometry
 
