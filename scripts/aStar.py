@@ -55,6 +55,7 @@ def getMap(msg): #callBack for the map topic
     print "Map Received!"
 
 def aStar(grid, start, goal): #takes a grid (2D array of cell objects), start and goal (both cells) 
+            
     print "Running A*"
     openSet = Queue.PriorityQueue(maxsize=0) #create a set to store all discovered nodes yet to be explored
     closedSet = [] #just a list because all we care about is whether or not something is here already
@@ -175,6 +176,9 @@ def callAStar(msg): #takes a goal message
     global offSetX
     global offSetY
 
+    global currX
+    global currY
+
     print offSetX
     print offSetY
     #create a cell for the goal
@@ -183,10 +187,11 @@ def callAStar(msg): #takes a goal message
     goal.y = int(round(msg.pose.position.y-offSetY,0))
     #create a cell for the start
     start = cell(0,0,0)
-    (trans,quat) = odom_list.lookupTransform('odom', 'base_footprint', rospy.Time(0))
+    
+    getCurrentPos()
     #the transform array is fine for x and y
-    start.x = int(round(trans[0]-offSetX,0)) #round to whole number
-    start.y = int(round(trans[1]-offSetY,0))
+    start.x = int(round(currX-offSetX,0)) #round to whole number
+    start.y = int(round(currY-offSetY,0))
 
     print("Calling A*")
     
@@ -387,6 +392,25 @@ def pointFromCell(cell): #creates a point from a cell
     
     return newPoint
 
+#funtion to get current position
+def getCurrentPos():
+    #current position and orientation:
+    global currX
+    global currY
+    global currAng
+
+    rate = rospy.Rate(10.0)
+    try:
+        (trans,quat) = odom_list.lookupTransform('odom', 'base_footprint', rospy.Time(0))
+        #the transform array is fine for x and y
+        currX = trans[0]
+        currY = trans[1]
+        #need to use the Euler-ized quaternion
+        euler = tf.transformations.euler_from_quaternion(quat)
+        currAng = normAngle(euler[2])#note that it gets converted right here to be between 0 and 2 pi, prevents issues later
+    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+        print "TF Exception"
+#         
 # This is the program's main function
 if __name__ == '__main__':
     rospy.init_node('aStar')
