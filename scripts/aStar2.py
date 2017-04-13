@@ -163,7 +163,10 @@ def getMap(msg): #callBack for the map topic
     print msg.info.width
     print "height"
     print msg.info.height
-
+    
+    height = msg.info.height
+    width = msg.info.width
+    
     offSetX = msg.info.origin.position.x
     offSetY = msg.info.origin.position.y
     resolution = msg.info.resolution
