@@ -204,6 +204,8 @@ def callAStar(msg): #takes a goal message
     global grid
     global offSetX
     global offSetY
+    global initPoseX
+    global initPoseY
 
     #get the position of the goal in terms of the grid
     goalX = int(round((msg.pose.position.x-offSetX)*resolution,0))
@@ -212,8 +214,8 @@ def callAStar(msg): #takes a goal message
     #get the position of start in terms of the grid
     (trans,quat) = odom_list.lookupTransform('odom', 'base_footprint', rospy.Time(0))
     #the transform array is fine for x and y
-    startX = int(round((trans[0]-offSetX)*resolution,0)) #round to whole number
-    startY = int(round((trans[1]-offSetY)*resolution,0))
+    startX = initPoseX #int(round((trans[0]-offSetX)*resolution,0)) #round to whole number
+    startY = initPoseY #int(round((trans[1]-offSetY)*resolution,0))
 
     print("Calling A*")
     
