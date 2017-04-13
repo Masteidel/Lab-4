@@ -73,6 +73,7 @@ def draw_tile(graph, id, style, width):
 def draw_grid(graph, width=2, **style):
     for y in range(graph.height):
         for x in range(graph.width):
+            pass
             #print("%%-%ds" % width % draw_tile(graph, (x, y), style, width), end="")
         #print()
 
