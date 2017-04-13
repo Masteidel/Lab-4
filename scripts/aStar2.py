@@ -209,7 +209,7 @@ def callAStar(msg): #takes a goal message
 
     print("Calling A*")
     
-    came_from, cost_so_far = aStar(grid, (startX, startY), (goalX, goalY))
+    came_from, cost_so_far = a_star_search(grid, (startX, startY), (goalX, goalY))
     publishGridCells(came_from)
 
 def publishGridCells(path):#takes a list of cells and publishes them to a given topic
