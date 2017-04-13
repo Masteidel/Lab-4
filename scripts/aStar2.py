@@ -73,8 +73,8 @@ def draw_tile(graph, id, style, width):
 def draw_grid(graph, width=2, **style):
     for y in range(graph.height):
         for x in range(graph.width):
-            print("%%-%ds" % width % draw_tile(graph, (x, y), style, width), end="")
-        print()
+            #print("%%-%ds" % width % draw_tile(graph, (x, y), style, width), end="")
+        #print()
 
 class SquareGrid:
     def __init__(self, width, height):
