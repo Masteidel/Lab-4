@@ -15,6 +15,8 @@ from nav_msgs.msg import GridCells
 from nav_msgs.msg import OccupancyGrid
 from nav_msgs.msg import Path
 from geometry_msgs.msg import Point
+from geometry_msgs.msg import PoseWithCovarianceStamped
+from geometry_msgs.msg import PoseWithCovariance
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Pose
 from tf.transformations import euler_from_quaternion
@@ -151,13 +153,12 @@ def a_star_search(graph, start, goal):
     
     return came_from, cost_so_far
 
+###########################################################################################################################################
 def setStart(msg):
     global initPoseX
     global initPoseY
     initPoseX = msg.pose.pose.position.x
     initPoseY = msg.pose.pose.position.y
-
-###########################################################################################################################################
 
 def getMap(msg): #callBack for the map topic
     global grid
