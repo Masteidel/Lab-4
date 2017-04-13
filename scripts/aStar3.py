@@ -356,8 +356,8 @@ def callAStar(msg): #takes a goal message
     global mapWidth
 
     #get the position of the goal in terms of the grid
-    goalX = int(round((msg.pose.position.x-offSetX)*resolution,0))
-    goalY = int(round((msg.pose.position.y-offSetY)*resolution,0))
+    goalX = initPoseX #int(round((msg.pose.position.x-offSetX)*resolution,0))
+    goalY = initPoseY #int(round((msg.pose.position.y-offSetY)*resolution,0))
 
     #get the position of start in terms of the grid
     (trans,quat) = odom_list.lookupTransform('odom', 'base_footprint', rospy.Time(0))
