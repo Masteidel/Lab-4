@@ -295,11 +295,15 @@ def setStart(msg):
     initPoseY = msg.pose.pose.position.y
     
 def getMap(msg):#callBack for the map topic
-    global grid
+    global wallList
     global offSetX
     global offSetY
     global resolution
-    
+    global astarObject
+
+    global mapHeight
+    global mapWidth
+
     print "width"
     print msg.info.width
     print "height"
@@ -331,16 +335,21 @@ def getMap(msg):#callBack for the map topic
             k+=1
 
         i+=1
-    astarObject.init_grid(width, height, wallList, (2.0, 1.0), (4.0, 1.0))
 
+    mapHeight = height
+    mapWidth = width
     print "Map Received!"
 
 def callAStar(msg): #takes a goal message
-    global grid
+    global wallList
     global offSetX
     global offSetY
     global initPoseX
     global initPoseY
+    global astarObject
+
+    global mapHeight
+    global mapWidth
 
     #get the position of the goal in terms of the grid
     goalX = int(round((msg.pose.position.x-offSetX)*resolution,0))
@@ -349,13 +358,18 @@ def callAStar(msg): #takes a goal message
     #get the position of start in terms of the grid
     (trans,quat) = odom_list.lookupTransform('odom', 'base_footprint', rospy.Time(0))
     #the transform array is fine for x and y
-    startX = initPoseX #int(round((trans[0]-offSetX)*resolution,0)) #round to whole number
-    startY = initPoseY #int(round((trans[1]-offSetY)*resolution,0))
+    startX = int(round((initPoseX-offSetX)*resolution,0)) #int(round((trans[0]-offSetX)*resolution,0)) #round to whole number
+    startY = int(round((initPoseY-offSetY)*resolution,0)) #int(round((trans[1]-offSetY)*resolution,0))
+
+    astarObject.init_grid(mapWidth, mapHeight, wallList, (startX, startY), (goalY, goalY))
 
     print("Calling A*")
     
-    came_from, cost_so_far = a_star_search(grid, (startX, startY), (goalX, goalY))
-    publishGridCells(came_from)
+    try:
+        print astarObject.solve()
+    except:
+        print "Some sort of error"
+
 
 def publishGridCells(path):#takes a list of cells and publishes them to a given topic
     global seqNum
