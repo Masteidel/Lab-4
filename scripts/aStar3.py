@@ -74,11 +74,11 @@ class AStar(object):
         self.end = self.get_cell(*end)
 
         def get_heuristic(self, cell):
-        """Compute the heuristic value H for a cell.
-        Distance between this cell and the ending cell multiply by 10.
-        @returns heuristic value H
-        """
-        return 10 * (abs(cell.x - self.end.x) + abs(cell.y - self.end.y))
+            """Compute the heuristic value H for a cell.
+            Distance between this cell and the ending cell multiply by 10.
+            @returns heuristic value H
+            """
+            return 10 * (abs(cell.x - self.end.x) + abs(cell.y - self.end.y))
 
     def get_cell(self, x, y):
         """Returns a cell from the cells list.
