@@ -34,6 +34,14 @@ class cell: #stores the probability of the cell being occupied and its f(n) cost
         x = xLoc
         y = yLoc
 
+class cellBoolean:
+    aCell = cell(50,0,0)
+    aBoolean = False
+
+    def __init__(self, cell, boolean):
+        aCell = cell
+        aBoolean = boolean
+
 def heuristic(current,goal): #returns h(n) euclidian distance to goal
     return int(math.sqrt(((goal.x-current.x)**2) + ((goal.y-current.y)**2))) #distance formula
     
@@ -356,7 +364,41 @@ def get2DArray(data, width, height): #an absolutely thrilling function to take a
         i+=1
     
     return grid
+'''
+def expandBorders(msg):
+    grid = get2DArray(msg.data, msg.info.width, msg.info.height)
+    for j in range(0, msg.info.height):
+        for i in range(0, msg.info.width):
+            if(grid[j][i].cell.prob < 50):
+                if((grid[j+1][i].cell.prob > 50) or (grid[j-1][i].cell.prob > 50) or (grid[j][i+1].cell.prob > 50) or (grid[j][i-1].cell.prob > 50)):
+                    aBooleanCell = booleanCell(cell, True)
+                else:
+                    aBooleanCell = booleanCell(cell, False)
+    booleanGrid = [[0 for row in range(0, height)] for col in range(0, width)]
+    i = 0 #index for outer loop (keeps track of the row)
+    j = 0 #index for inner loop (keeps track of the column)
+    k = 0 #index for data (never gets reset)
+    while (i < height) and (k < len(data)): #go through all rows (starting at the top (0,0))
+        j = 0 #reset index (start at the start of the new row)
 
+        while (j < width) and (k < len(data)): #go through a single row
+            booleanGrid[j][i] = booleanCell(cell(data[k], j, i), boolean)#creates a cell object
+            #grid[j][i]=cell()
+            booleanGrid[j][i].x = j
+            booleanGrid[j][i].y = i
+            booleanGrid[j][i].prob = data[k]
+            j+=1
+            k+=1
+
+        i+=1
+    expandedGrid = 
+
+def emptyCellNextToObjectBoolean(cell):
+    if(cell.prob == 0):
+
+    aCellBoolean = cellBoolean(cell, )
+
+'''
 def publishGridCells(cells,topic):#takes a list of cells and publishes them to a given topic
     global seqNum
     global resolution
@@ -442,6 +484,7 @@ if __name__ == '__main__':
     global gridCellsPub
 
     map_sub = rospy.Subscriber('/map', OccupancyGrid, getMap, queue_size=1) #get the occupancy grid
+    #expand_sub = rospy.Subscriber('/map', OccupancyGrid, expandBorders, queue_size=1)
     #start_sub = rospy.Subscriber('', GridCells, callAStar, queue_size=1)
     goal_sub = rospy.Subscriber('/goal', PoseStamped, callAStar, queue_size=1)
     pathPub = rospy.Publisher('aStar_Path', Path, queue_size=10)
