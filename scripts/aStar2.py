@@ -237,7 +237,7 @@ def publishGridCells(path):#takes a list of cells and publishes them to a given 
 
 def pointList(path): #creates a list of points from a list of tuples (x,y)
     points = []
-    for i in cells:
+    for i in path:
         newPoint = Point()
 
         newPoint.x = (i[0]/resolution)+offSetX
