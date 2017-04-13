@@ -151,6 +151,12 @@ def a_star_search(graph, start, goal):
     
     return came_from, cost_so_far
 
+def setStart(msg):
+    global initPoseX
+    global initPoseY
+    initPoseX = msg.pose.pose.position.x
+    initPoseY = msg.pose.pose.position.y
+
 ###########################################################################################################################################
 
 def getMap(msg): #callBack for the map topic
@@ -269,7 +275,7 @@ if __name__ == '__main__':
 
     map_sub = rospy.Subscriber('/map', OccupancyGrid, getMap, queue_size=1) #get the occupancy grid
     goal_sub = rospy.Subscriber('/goal', PoseStamped, callAStar, queue_size=1)
-    
+    start_sub = rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, setStart, queue_size=1)
     pathPub = rospy.Publisher('aStar_Path', Path, queue_size=10)
     gridCellsPub = rospy.Publisher('aStar_Closed', GridCells, queue_size=10)
     #publ = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, None, queue_size=10)
