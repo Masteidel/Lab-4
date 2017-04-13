@@ -159,7 +159,7 @@ def setStart(msg):
     initPoseX = msg.pose.pose.position.x
     initPoseY = msg.pose.pose.position.y
     
-def getMap(msg): #callBack for the map topic
+def getMap(msg):#callBack for the map topic
     global grid
     global offSetX
     global offSetY
