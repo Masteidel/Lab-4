@@ -358,7 +358,7 @@ def callAStar(msg): #takes a goal message
     #get the position of start in terms of the grid
     (trans,quat) = odom_list.lookupTransform('odom', 'base_footprint', rospy.Time(0))
     #the transform array is fine for x and y
-    startX = int(round((initPoseX-offSetX)*resolution,0)) #int(round((trans[0]-offSetX)*resolution,0)) #round to whole number
+    startX = int(round((initPoseX-offSetX)*resolution,0)) #int(round((trans[0]-offSetX)*resolution,0)) #round to whole numberinitPoseX
     startY = int(round((initPoseY-offSetY)*resolution,0)) #int(round((trans[1]-offSetY)*resolution,0))
 
     astarObject.init_grid(mapWidth, mapHeight, wallList, (startX, startY), (goalY, goalY))
@@ -422,6 +422,11 @@ if __name__ == '__main__':
     global pathPub
     global gridCellsPub
 
+    global initPoseX
+    global initPoseY
+    
+    initPoseX = 0
+    initPoseY = 0
     #create the sequence number for the gridcells messages
     global seqNum
     seqNum = 0
