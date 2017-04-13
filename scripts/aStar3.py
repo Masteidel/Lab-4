@@ -86,7 +86,7 @@ class AStar(object):
         @param y cell y coordinate
         @returns cell
         """
-        return int(self.cells[x * self.grid_height + y])
+        return self.cells[int(x * self.grid_height + y)]
 
     def get_adjacent_cells(self, cell):
         """Returns adjacent cells to a cell.
