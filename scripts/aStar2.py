@@ -232,7 +232,8 @@ def publishGridCells(path):#takes a list of cells and publishes them to a given 
     gridCells.cell_width = resolution
     gridCells.cell_height = resolution
     gridCells.cells = points
-
+    print "Points: "
+    print points
     gridCellsPub.publish(gridCells)
 
 def pointList(path): #creates a list of points from a list of tuples (x,y)
