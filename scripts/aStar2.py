@@ -4,7 +4,8 @@
 # Feel free to use this code in your own projects, including commercial projects
 # License: Apache v2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>
 
-import rospy, tf, numpy, math, random, Queue
+import rospy, tf, numpy, math, random, Queue, heapq
+
 from kobuki_msgs.msg import BumperEvent
 from std_msgs.msg import String
 from std_msgs.msg import Header
@@ -97,26 +98,6 @@ class SquareGrid:
         results = filter(self.in_bounds, results)
         results = filter(self.passable, results)
         return results
-
-class GridWithWeights(SquareGrid):
-    def __init__(self, width, height):
-        super().__init__(width, height)
-        self.weights = {}
-    
-    def cost(self, from_node, to_node):
-        return self.weights.get(to_node, 1)
-
-diagram4 = GridWithWeights(10, 10)
-diagram4.walls = [(1, 7), (1, 8), (2, 7), (2, 8), (3, 7), (3, 8)]
-diagram4.weights = {loc: 5 for loc in [(3, 4), (3, 5), (4, 1), (4, 2),
-                                       (4, 3), (4, 4), (4, 5), (4, 6), 
-                                       (4, 7), (4, 8), (5, 1), (5, 2),
-                                       (5, 3), (5, 4), (5, 5), (5, 6), 
-                                       (5, 7), (5, 8), (6, 2), (6, 3), 
-                                       (6, 4), (6, 5), (6, 6), (6, 7), 
-                                       (7, 3), (7, 4), (7, 5)]}
-
-import heapq
 
 class PriorityQueue:
     def __init__(self):
