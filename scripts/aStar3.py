@@ -73,12 +73,12 @@ class AStar(object):
         self.start = self.get_cell(*start)
         self.end = self.get_cell(*end)
 
-        def get_heuristic(self, cell):
-            """Compute the heuristic value H for a cell.
-            Distance between this cell and the ending cell multiply by 10.
-            @returns heuristic value H
-            """
-            return 10 * (abs(cell.x - self.end.x) + abs(cell.y - self.end.y))
+    def get_heuristic(self, cell):
+        """Compute the heuristic value H for a cell.
+        Distance between this cell and the ending cell multiply by 10.
+        @returns heuristic value H
+        """
+        return 10 * (abs(cell.x - self.end.x) + abs(cell.y - self.end.y))
 
     def get_cell(self, x, y):
         """Returns a cell from the cells list.
@@ -293,6 +293,10 @@ def setStart(msg):
     global initPoseY
     initPoseX = msg.pose.pose.position.x
     initPoseY = msg.pose.pose.position.y
+    print "initPoseX"
+    print initPoseX
+    print "initPoseY"
+    print initPoseY
     
 def getMap(msg):#callBack for the map topic
     global wallList
@@ -358,8 +362,8 @@ def callAStar(msg): #takes a goal message
     #get the position of start in terms of the grid
     (trans,quat) = odom_list.lookupTransform('odom', 'base_footprint', rospy.Time(0))
     #the transform array is fine for x and y
-    startX = int(round((initPoseX-offSetX)*resolution,0)) #int(round((trans[0]-offSetX)*resolution,0)) #round to whole numberinitPoseX
-    startY = int(round((initPoseY-offSetY)*resolution,0)) #int(round((trans[1]-offSetY)*resolution,0))
+    startX = initPoseX #int(round((initPoseX-offSetX)*resolution,0)) #int(round((trans[0]-offSetX)*resolution,0)) #round to whole numberinitPoseX
+    startY = initPoseY #int(round((initPoseY-offSetY)*resolution,0)) #int(round((trans[1]-offSetY)*resolution,0))
 
     astarObject.init_grid(mapWidth, mapHeight, wallList, (startX, startY), (goalY, goalY))
 
