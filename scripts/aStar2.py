@@ -271,7 +271,8 @@ if __name__ == '__main__':
     
     pathPub = rospy.Publisher('aStar_Path', Path, queue_size=10)
     gridCellsPub = rospy.Publisher('aStar_Closed', GridCells, queue_size=10)
-    publ = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, None, queue_size=10)
+    #publ = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, None, queue_size=10)
+    
     
     odom_list = tf.TransformListener() #save the bot's odometry
 
