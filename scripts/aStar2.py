@@ -151,14 +151,14 @@ def a_star_search(graph, start, goal):
     
     return came_from, cost_so_far
 
+###########################################################################################################################################
+
 def setStart(msg):
     global initPoseX
     global initPoseY
     initPoseX = msg.pose.pose.position.x
     initPoseY = msg.pose.pose.position.y
-
-###########################################################################################################################################
-
+    
 def getMap(msg): #callBack for the map topic
     global grid
     global offSetX
