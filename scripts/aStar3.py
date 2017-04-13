@@ -365,10 +365,10 @@ def callAStar(msg): #takes a goal message
 
     print("Calling A*")
     
-    #try:
-    print astarObject.solve()
-    #except:
-     #   print "Some sort of error"
+    try:
+        publishGridCells(astarObject.solve())
+    except:
+        print "Some sort of error"
 
 
 def publishGridCells(path):#takes a list of cells and publishes them to a given topic
