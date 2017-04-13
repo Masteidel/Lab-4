@@ -390,6 +390,7 @@ def pointList(cells): #creates a list of points from a list of cells
 
 
 def pointFromCell(cell): #creates a point from a cell
+    global resolution
     newPoint = Point()
 
     newPoint.x = (cell.x*resolution)+offSetX
