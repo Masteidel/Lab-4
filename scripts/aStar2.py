@@ -182,7 +182,7 @@ def getMap(msg): #callBack for the map topic
         j = 0 #reset index (start at the start of the new row)
 
         while (j < width) and (k < len(data)): #go through a single row
-            if data[k] > 99: #check if its an obstacle
+            if msg.data[k] > 99: #check if its an obstacle
                 grid.walls.append((i,j)) #add to the list of obstacles
 
             j+=1
