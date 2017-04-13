@@ -404,8 +404,8 @@ def pointList(path): #creates a list of points from a list of tuples (x,y)
     for i in path:
         newPoint = Point()
 
-        newPoint.x = (i[0]/resolution)+offSetX
-        newPoint.y = (i[1]/resolution)+offSetY
+        newPoint.x = (i[0]*resolution)+offSetX
+        newPoint.y = (i[1]*resolution)+offSetY
         newPoint.z = 0
 
         points.append(newPoint)
