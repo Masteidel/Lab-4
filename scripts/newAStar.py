@@ -1,5 +1,5 @@
 import rospy, tf, numpy, math, random, Queue, collections, heapq
-from implementation import *
+#from implementation import *
 from kobuki_msgs.msg import BumperEvent
 from std_msgs.msg import String
 from std_msgs.msg import Header
@@ -17,11 +17,12 @@ from tf.transformations import euler_from_quaternion
 from tf.transformations import quaternion_from_euler
 
 class Cell:
-	def __init__(self, xLoc, yLoc):
+	def __init__(self, xLoc, yLoc, reachable):
+		self.reachable = reachable
 		self.loc = (xLoc, yLoc)
 		self.fCost = 0
 		self.gCost = 0
-		self.parents = {}
+		self.parent = None
 		self.visited = False
 
 class SimpleGraph:
@@ -80,7 +81,10 @@ class SquareGrid:
 
 class GridWithWeights(SquareGrid):
 	def __init__(self, width, height):
-		super().__init__(self, width, height)
+		#super().__init__(self, width, height)
+		self.width = width
+		self.height = height
+		self.walls = []
 		self.weights = {}
 
 	def cost(self, from_node, to_node):
@@ -153,29 +157,29 @@ def publishGridCells(path):
 	head.frame_id = "map"
 
 	points = pointList(path)#get the points
-    
-    gridCells = GridCells()#create the message
-    #fill the message with the necessary data
-    gridCells.header = head
-    gridCells.cell_width = resolution
-    gridCells.cell_height = resolution
-    gridCells.cells = points
-    print "Points: "
-    print points
-    gridCellsPub.publish(gridCells)
+	
+	gridCells = GridCells()
+	#fill the message with the necessary data
+	gridCells.header = head
+	gridCells.cell_width = resolution
+	gridCells.cell_height = resolution
+	gridCells.cells = points
+	print "Points: "
+	print points
+	gridCellsPub.publish(gridCells)
 
 def pointList(path): #creates a list of points from a list of tuples (x,y)
-    points = []
-    for i in path:
-        newPoint = Point()
+	points = []
+	for i in path:
+		newPoint = Point()
 
-        newPoint.x = i[0]
-        newPoint.y = i[1]
-        newPoint.z = 0
+		newPoint.x = i[0]*resolution
+		newPoint.y = i[1]*resolution
+		newPoint.z = 0
 
-        points.append(newPoint)
+		points.append(newPoint)
 
-    return points
+	return points
 
 def callAStar(msg):
 	global grid
@@ -186,7 +190,10 @@ def callAStar(msg):
 
 	goalX = msg.pose.position.x
 	goalY = msg.pose.position.y
-	start = (startX, startY)
+	if(startX == None || startY == None):
+		start = (1.0, 2.0)
+	else:
+		start = (startX, startY)
 	goal = (goalX, goalY)
 
 	came_from, cost_so_far = a_star_search(grid, start, goal)
@@ -204,3 +211,5 @@ if __name__ == '__main__':
 	gridCellsPub = rospy.Publisher('aStar_Closed', GridCells, queue_size=10)
 
 	rospy.sleep(rospy.Duration(1, 0))
+	while(not rospy.is_shutdown()):
+		rospy.sleep(0.15)
