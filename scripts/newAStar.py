@@ -119,6 +119,7 @@ def a_star_search(graph, start, goal):
 				frontier.put(next, priority)
 				came_from[next] = current
 
+	publishGridCells(graph.walls)			
 	return came_from, cost_so_far
 
 def reconstruct_path(came_from, start, goal):
@@ -160,7 +161,6 @@ def getMap(msg):
 		i+=1
 
 	grid.walls = wallList
-	publishGridCells(wallList)
 
 def getStart(msg):
 	global startX
