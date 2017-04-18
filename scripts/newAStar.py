@@ -147,10 +147,10 @@ def getMap(msg):
 	j = 0 #index for inner loop (keeps track of the column)
 	k = 0 #index for data (never gets reset)
 
-	while (i < height) and (k < len(msg.data)): #go through all rows (starting at the top (0,0))
+	while (i < width) and (k < len(msg.data)): #go through all rows (starting at the top (0,0))
 		j = 0 #reset index (start at the start of the new row)
 
-		while (j < width) and (k < len(msg.data)): #go through a single row
+		while (j < height) and (k < len(msg.data)): #go through a single row
 			if msg.data[k] > 99: #check if its an obstacle
 				wallList.append((i,j)) #add to the list of obstacles
 
