@@ -151,7 +151,6 @@ def getMap(msg):
 		j = 0 #reset index (start at the start of the new row)
 
 		while (j < width) and (k < len(msg.data)): #go through a single row
-			print msg.data[k]
 			if msg.data[k] > 99: #check if its an obstacle
 				wallList.append((i,j)) #add to the list of obstacles
 
@@ -223,7 +222,7 @@ def callAStar(msg):
 	print grid.walls
 	came_from, cost_so_far = a_star_search(grid, start, goal)
 	path = reconstruct_path(came_from, start, goal)
-	publishGridCells(path)
+	#publishGridCells(path)
 
 if __name__ == '__main__':
 	rospy.init_node('aStar')
