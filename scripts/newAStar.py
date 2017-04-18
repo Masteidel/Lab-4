@@ -161,6 +161,7 @@ def getMap(msg):
 		j+=1
 
 	grid.walls = wallList
+	publishGridCells(wallList)
 
 def getStart(msg):
 	global startX
