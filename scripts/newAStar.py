@@ -154,10 +154,10 @@ def getMap(msg):
 			if msg.data[k] > 99: #check if its an obstacle
 				wallList.append((j,i)) #add to the list of obstacles
 
-			j+=1
+			i+=1
 			k+=1
 
-		i+=1
+		j+=1
 
 	grid.walls = wallList
 
