@@ -142,8 +142,8 @@ def getStart(msg):
 	global startX
 	global startY
 
-	startX = msg.pose.pose.position.x
-	startY = msg.pose.pose.position.y
+	startX = int(round(msg.pose.pose.position.x, 0))
+	startY = int(round(msg.pose.pose.position.y, 0))
 
 def publishGridCells(path):
 	global seqNum
@@ -164,8 +164,8 @@ def publishGridCells(path):
 	gridCells.cell_width = resolution
 	gridCells.cell_height = resolution
 	gridCells.cells = points
-	print "Points: "
-	print points
+	#print "Points: "
+	#print points
 	gridCellsPub.publish(gridCells)
 
 def pointList(path): #creates a list of points from a list of tuples (x,y)
@@ -173,8 +173,8 @@ def pointList(path): #creates a list of points from a list of tuples (x,y)
 	for i in path:
 		newPoint = Point()
 
-		newPoint.x = i[0]*resolution
-		newPoint.y = i[1]*resolution
+		newPoint.x = i[0]#*resolution
+		newPoint.y = i[1]#*resolution
 		newPoint.z = 0
 
 		points.append(newPoint)
@@ -188,16 +188,17 @@ def callAStar(msg):
 	global goalX
 	global goalY
 
-	goalX = msg.pose.position.x
-	goalY = msg.pose.position.y
-	if(startX == None || startY == None):
+	goalX = int(round(msg.pose.position.x, 0))
+	goalY = int(round(msg.pose.position.y, 0))
+	if(startX == None or startY == None):
 		start = (1.0, 2.0)
 	else:
 		start = (startX, startY)
 	goal = (goalX, goalY)
-
+	print grid.walls
 	came_from, cost_so_far = a_star_search(grid, start, goal)
-	publishGridCells(came_from)
+	path = reconstruct_path(came_from, start, goal)
+	publishGridCells(path)
 
 if __name__ == '__main__':
 	rospy.init_node('aStar')
