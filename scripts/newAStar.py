@@ -151,6 +151,7 @@ def getMap(msg):
 		j = 0 #reset index (start at the start of the new row)
 
 		while (j < width) and (k < len(msg.data)): #go through a single row
+			print msg.data[k]
 			if msg.data[k] > 99: #check if its an obstacle
 				wallList.append((i,j)) #add to the list of obstacles
 
