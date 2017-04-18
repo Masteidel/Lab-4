@@ -135,8 +135,31 @@ def getMap(msg):
 	global grid
 	global resolution
 
-	grid = GridWithWeights(msg.info.width, msg.info.height)
+	height = msg.info.height
+	width = msg.info.width
+	grid = GridWithWeights(width, height)
 	resolution = msg.info.resolution
+
+	wallList = []
+
+    #create index variable
+    i = 0 #index for outer loop (keeps track of the row)
+    j = 0 #index for inner loop (keeps track of the column)
+    k = 0 #index for data (never gets reset)
+
+    while (i < height) and (k < len(msg.data)): #go through all rows (starting at the top (0,0))
+        j = 0 #reset index (start at the start of the new row)
+
+        while (j < width) and (k < len(msg.data)): #go through a single row
+            if msg.data[k] > 99: #check if its an obstacle
+                wallList.append((i,j)) #add to the list of obstacles
+
+            j+=1
+            k+=1
+
+        i+=1
+
+    grid.walls = wallList
 
 def getStart(msg):
 	global startX
