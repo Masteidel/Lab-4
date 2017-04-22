@@ -136,6 +136,8 @@ def getMap(msg):
 	global offSetX
 	global offSetY
 	global resolution
+	global height
+	global width
 
 	height = msg.info.height
 	width = msg.info.width
@@ -196,8 +198,6 @@ def publishGridCells(path):
 	gridCells.cell_width = resolution
 	gridCells.cell_height = resolution
 	gridCells.cells = points
-	#print "Points: "
-	#print points
 	gridCellsPub.publish(gridCells)
 
 def pointList(path): #creates a list of points from a list of tuples (x,y)
@@ -227,6 +227,56 @@ def scalePath(path):
 
 	return pathScaled
 
+def expandWalls(walls):
+	global seqNum
+	global offSetX
+	global offSetY
+	global resolution
+	global expandedWallsPub
+	expansionList = []
+	scaledExpansionList = []
+	expandedWallList = []
+	for i in walls:
+		if ((i[0]+1),i[1]) not in expansionList:
+			if ((i[0]+1),i[1]) not in walls:
+				expansionList.append(((i[0]+1),i[1]))
+		if ((i[0]-1),i[1]) not in expansionList:
+			if ((i[0]-1),i[1]) not in walls:
+				expansionList.append(((i[0]-1),i[1]))
+		if (i[0],(i[1]+1)) not in expansionList:
+			if (i[0],(i[1]+1)) not in walls:
+				expansionList.append((i[0],(i[1]+1)))
+		if (i[0],(i[1]-1)) not in expansionList:
+			if (i[0],(i[1]-1)) not in walls:
+				expansionList.append((i[0],(i[1]-1)))
+
+	for i in walls:
+		expandedWallList.append((i[0],i[1]))
+
+	for i in expansionList:
+		expandedWallList.append((i[0],i[1]))
+
+	for i in expansionList:
+		newX = round((i[0] + 0.5)*resolution + offSetX, 5)
+		newY = round((i[1] + 0.5)*resolution + offSetY, 5)
+		scaledExpansionList.append((newX,newY))
+
+	head = Header()
+	head.seq = seqNum
+	seqNum += 1
+	head.stamp = rospy.get_rostime()
+	head.frame_id = "map"
+
+	points = pointList(scaledExpansionList)#get the points
+	
+	gridCells = GridCells()
+	gridCells.header = head
+	gridCells.cell_width = resolution
+	gridCells.cell_height = resolution
+	gridCells.cells = points
+	expandedWallsPub.publish(gridCells)
+	return expandedWallList
+
 def callAStar(msg):
 	global grid
 	global startX
@@ -236,16 +286,16 @@ def callAStar(msg):
 	global offSetX
 	global offSetY
 	global resolution
+	global height
+	global width
 
 	goalX = int(round((((msg.pose.position.x - offSetX)/resolution) - 0.5), 0))
 	goalY = int(round((((msg.pose.position.y - offSetY)/resolution) - 0.5), 0))
-	if(startX == None or startY == None):
-		start = (1.0, 2.0)
-	else:
-		start = (startX, startY)
+	start = (startX, startY)
 	goal = (goalX, goalY)
-	print grid.walls
-	came_from, cost_so_far = a_star_search(grid, start, goal)
+	expandedGrid = GridWithWeights(width, height)
+	expandedGrid.walls = expandWalls(grid.walls)
+	came_from, cost_so_far = a_star_search(expandedGrid, start, goal)
 	path = reconstruct_path(came_from, start, goal)
 	pathScaled = scalePath(path)
 	publishGridCells(pathScaled)
@@ -253,6 +303,7 @@ def callAStar(msg):
 if __name__ == '__main__':
 	rospy.init_node('aStar')
 	global gridCellsPub
+	global expandedWallsPub
 	global seqNum
 	seqNum = 0
 
@@ -260,6 +311,7 @@ if __name__ == '__main__':
 	start_sub = rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, getStart, queue_size=1)
 	goal_sub = rospy.Subscriber('/goal', PoseStamped, callAStar, queue_size=1)
 	gridCellsPub = rospy.Publisher('aStar_Closed', GridCells, queue_size=10)
+	expandedWallsPub = rospy.Publisher('walls',GridCells, queue_size=10)
 
 	rospy.sleep(rospy.Duration(1, 0))
 	while(not rospy.is_shutdown()):
