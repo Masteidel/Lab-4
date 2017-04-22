@@ -133,10 +133,14 @@ def reconstruct_path(came_from, start, goal):
 
 def getMap(msg):
 	global grid
+	global offSetX
+	global offSetY
 	global resolution
 
 	height = msg.info.height
 	width = msg.info.width
+	offSetX = msg.info.origin.position.x
+	offSetY = msg.info.origin.position.y
 	grid = GridWithWeights(width, height)
 	resolution = msg.info.resolution
 
@@ -152,7 +156,7 @@ def getMap(msg):
 
 		while (j < width) and (k < len(msg.data)): #go through a single row
 			if msg.data[k] > 99: #check if its an obstacle
-				wallList.append((j*resolution,i*resolution)) #add to the list of obstacles
+				wallList.append((j,i)) #add to the list of obstacles
 
 			j+=1
 			k+=1
@@ -164,12 +168,17 @@ def getMap(msg):
 def getStart(msg):
 	global startX
 	global startY
+	global offSetX
+	global offSetY
+	global resolution
 
-	startX = int(round(msg.pose.pose.position.x, 0))
-	startY = int(round(msg.pose.pose.position.y, 0))
+	startX = int(round((((msg.pose.pose.position.x - offSetX)/resolution) - 0.5), 0))
+	startY = int(round((((msg.pose.pose.position.y - offSetY)/resolution) - 0.5), 0))
 
 def publishGridCells(path):
 	global seqNum
+	global offSetX
+	global offSetY
 	global resolution
 	global gridCellsPub
 
@@ -204,15 +213,32 @@ def pointList(path): #creates a list of points from a list of tuples (x,y)
 
 	return points
 
+def scalePath(path):
+	global offSetX
+	global offSetY
+	global resolution
+
+	pathScaled = []
+
+	for i in path:
+		newX = round((i[0] + 0.5)*resolution + offSetX, 5)
+		newY = round((i[1] + 0.5)*resolution + offSetY, 5)
+		pathScaled.append((newX,newY))
+
+	return pathScaled
+
 def callAStar(msg):
 	global grid
 	global startX
 	global startY
 	global goalX
 	global goalY
+	global offSetX
+	global offSetY
+	global resolution
 
-	goalX = int(round(msg.pose.position.x, 0))
-	goalY = int(round(msg.pose.position.y, 0))
+	goalX = int(round((((msg.pose.position.x - offSetX)/resolution) - 0.5), 0))
+	goalY = int(round((((msg.pose.position.y - offSetY)/resolution) - 0.5), 0))
 	if(startX == None or startY == None):
 		start = (1.0, 2.0)
 	else:
@@ -221,7 +247,8 @@ def callAStar(msg):
 	print grid.walls
 	came_from, cost_so_far = a_star_search(grid, start, goal)
 	path = reconstruct_path(came_from, start, goal)
-	publishGridCells(path)
+	pathScaled = scalePath(path)
+	publishGridCells(pathScaled)
 
 if __name__ == '__main__':
 	rospy.init_node('aStar')
